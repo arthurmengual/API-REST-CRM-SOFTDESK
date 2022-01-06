@@ -11,13 +11,11 @@ class User(AbstractUser):
 
 class Project(models.Model):
 
-    project_id = models.IntegerField()
     title = models.CharField( max_length=50)
     description = models.CharField(max_length=100)
     type = models.CharField(max_length=50)
     author_user_id = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    
     
     def __str__(self):
         return self.title
@@ -32,9 +30,6 @@ class Contributor(models.Model):
     permission = models.CharField(max_length=5, choices=ROLE_CHOICE)
     role = models.CharField(max_length=50)
     
-    def __str__(self):
-        return self.user_id
-
 
 class Issue(models.Model):
 
@@ -44,7 +39,7 @@ class Issue(models.Model):
     description = models.CharField(max_length=100)
     tag = models.CharField(max_length=50)
     priority = models.CharField(max_length=6, choices=PRIORITY_CHOICE)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    project_id = models.ForeignKey(Project, on_delete=models.CASCADE)
     status = models.CharField(max_length=50)
     author_user_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='author')
     assignee_user_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='assignee')

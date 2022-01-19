@@ -51,7 +51,6 @@ class Issue(models.Model):
 
 class Comment(models.Model):
 
-    comments_id = models.IntegerField()
     description = models.CharField(max_length=100)
     author_user_id = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

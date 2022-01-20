@@ -2,25 +2,29 @@ from rest_framework.permissions import BasePermission
 from . import models
 
 
-class Is_user_author(BasePermission):
+class Project_permission(BasePermission):
 
     def has_permission(self, request, view):
-        if request.user.IsAuthenticated():
-            return True
-        else:
-            return False
-
-    def has_object_permission(self, request, view, obj):
-        
+        pk = view.kwargs['pk']
+        project = models.Project.objects.get(pk=pk)
+        contributors = models.Contributor.objects.filter(project_id=pk)
+        print(contributors)
         if request.user.is_superuser:
             return True
-        elif request.user == obj.author_user_id:
-            return True
-        else:
-            return False
-
-
-class Is_user_contributor(BasePermission):
+        if view.action in ['update', 'destroy']:
+            if request.user == project.author_user_id:
+                return True
+        elif view.action == 'retrieve':
+            if request.user == project.author_user_id:
+                return True
+            elif contributors.filter(user_id=request.user.id).exists():
+                return True
+            else:
+                return False 
+        return True
+        
+      
+class Contributor_permission(BasePermission):
 
     def has_permission(self, request, view):
         if self.request.user.IsAuthenticated():
@@ -28,10 +32,4 @@ class Is_user_contributor(BasePermission):
         else:
             return False
 
-    def has_object_permission(self, request, view, obj):
-        if request.user.is_superuser:
-            return True
-        elif models.Contributor.objects.filter(project_id=obj.id, user_id=request.user).exists:
-            return True
-        else:
-            return False
+    

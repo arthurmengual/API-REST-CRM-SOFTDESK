@@ -4,6 +4,7 @@ from rest_framework.permissions import IsAuthenticated
 from . import serializers
 from . import models
 from . import permissions
+from itertools import chain
 
 class UserViewset(viewsets.ModelViewSet):
     
@@ -14,11 +15,18 @@ class UserViewset(viewsets.ModelViewSet):
 class ProjectViewSet(viewsets.ModelViewSet):
 
     serializer_class = serializers.ProjectSerializer
-    permission_classes = [IsAuthenticated]
+    #permission_classes = [permissions.Project_permission]
 
     def get_queryset(self):
-        #filtrer que les projets dont il est l'auteur ou contrib
-        return models.Project.objects.filter(author_user_id=self.request.user)
+        queryset1 = models.Project.objects.filter(author_user_id=self.request.user)
+        contributors = models.Contributor.objects.filter(user_id=self.request.user)
+        list = []
+        for contributor in contributors:
+            print(contributor.project_id)
+            list.append(contributor.project_id)
+        queryset2 = models.Project.objects.filter(author_user_id__in=list)
+        queryset = queryset1 | queryset2
+        return queryset
 
     def create(self, request, *args, **kwargs):
         request.POST._mutable = True
@@ -37,7 +45,7 @@ class ContributorViewSet(viewsets.ModelViewSet):
 
     serializer_class = serializers.ContributorSerializer
 
-    permission_classes = [IsAuthenticated]
+    permission_classes = [permissions.Contributor_permission]
     #permissions ==> get: if user == contributor
     #                create, update, destroy: user == project_author
 

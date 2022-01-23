@@ -1,10 +1,7 @@
-from django.http import request
 from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated
 from . import serializers
 from . import models
 from . import permissions
-from itertools import chain
 
 class UserViewset(viewsets.ModelViewSet):
     
@@ -15,18 +12,10 @@ class UserViewset(viewsets.ModelViewSet):
 class ProjectViewSet(viewsets.ModelViewSet):
 
     serializer_class = serializers.ProjectSerializer
-    #permission_classes = [permissions.Project_permission]
+    permission_classes = [permissions.Project_permission]
 
     def get_queryset(self):
-        queryset1 = models.Project.objects.filter(author_user_id=self.request.user)
-        contributors = models.Contributor.objects.filter(user_id=self.request.user)
-        list = []
-        for contributor in contributors:
-            print(contributor.project_id)
-            list.append(contributor.project_id)
-        queryset2 = models.Project.objects.filter(author_user_id__in=list)
-        queryset = queryset1 | queryset2
-        return queryset
+        return models.Project.objects.all()
 
     def create(self, request, *args, **kwargs):
         request.POST._mutable = True
@@ -40,14 +29,16 @@ class ProjectViewSet(viewsets.ModelViewSet):
         request.POST._mutable = False
         return super().update(request, *args, **kwargs)
    
-    
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return serializers.Project_detail_serializer
+        return super().get_serializer_class()
+
 class ContributorViewSet(viewsets.ModelViewSet):
 
     serializer_class = serializers.ContributorSerializer
-
     permission_classes = [permissions.Contributor_permission]
-    #permissions ==> get: if user == contributor
-    #                create, update, destroy: user == project_author
+   
 
     def get_queryset(self, *args, **kwargs):
         project_pk = self.kwargs.get('project_pk')
@@ -71,6 +62,7 @@ class ContributorViewSet(viewsets.ModelViewSet):
         user_id = self.kwargs.get('user_pk')
         if self.request.user == user_id:
             print('utiliser drf error pour raise lerreur')
+            return
         return super().destroy(request, *args, **kwargs)
 
     #def destroy vérifier que le user n'est pas nous même 
@@ -80,9 +72,7 @@ class IssueViewSet(viewsets.ModelViewSet):
 
     serializer_class =serializers.IssueSerializer
     queryset = models.Issue.objects.all()
-    permission_classes = [IsAuthenticated]
-    #permission = get et create: if user == project author ou contributor
-    #              update: if user == author
+    permission_classes = [permissions.Issue_permission]
 
     def get_queryset(self, *args, **kwargs):
         project_pk = self.kwargs.get('project_pk')
@@ -104,14 +94,15 @@ class IssueViewSet(viewsets.ModelViewSet):
         request.POST._mutable = False
         return super().update(request, *args, **kwargs)
 
+    def destroy(self, request, *args, **kwargs):
+        return super().destroy(request, *args, **kwargs)
+
 
 class CommentViewSet(viewsets.ModelViewSet):
 
     serializer_class = serializers.CommentSerializer
     queryset = models.Comment.objects.all()
-    permission_classes = [IsAuthenticated]
-    #permissions ==> get: if user == contributor
-    #                reste: if user == author
+    permission_classes = [permissions.Comment_permission]
 
     def get_queryset(self, *args, **kwargs):
         issue_pk = self.kwargs.get('issues_pk')

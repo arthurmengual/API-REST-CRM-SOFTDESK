@@ -18,7 +18,11 @@ class ProjectSerializer(ModelSerializer):
         model = Project
         fields = '__all__'
 
+class Project_detail_serializer(ModelSerializer):
 
+    class Meta:
+        model = Project
+        fields = ['id', 'title']
 
 class ContributorSerializer(ModelSerializer):
 

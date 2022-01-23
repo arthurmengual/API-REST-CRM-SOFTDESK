@@ -10,10 +10,12 @@ class User(AbstractUser):
 
 
 class Project(models.Model):
+    
+    CHOICE = (('back-end', 'back'), ('front-end', 'front'), ('ios', 'ios'), ('Android', 'android'))
 
     title = models.CharField( max_length=50)
     description = models.CharField(max_length=100)
-    type = models.CharField(max_length=50)
+    type = models.CharField(max_length=50, choices=CHOICE)
     author_user_id = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     

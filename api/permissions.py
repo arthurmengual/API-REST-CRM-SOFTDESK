@@ -29,7 +29,7 @@ class Contributor_permission(BasePermission):
 
     def has_permission(self, request, view):
         project_id = view.kwargs['project_pk']
-        project = models.Project.objects.get(author_user_id=project_id)
+        project = models.Project.objects.get(id=project_id)
         project_author = project.author_user_id
         if request.user.is_superuser:
             return True

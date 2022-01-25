@@ -1,4 +1,3 @@
-from lib2to3.pytree import Base
 from rest_framework.permissions import BasePermission
 from . import models
 
@@ -24,7 +23,6 @@ class Project_permission(BasePermission):
             return True
         else:
             return False
-
 
       
 class Contributor_permission(BasePermission):

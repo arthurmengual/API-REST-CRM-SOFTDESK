@@ -10,7 +10,6 @@ class UserSerializer(ModelSerializer):
         fields = '__all__'
         include = ['id']
 
-   
 
 class ProjectSerializer(ModelSerializer):
 
@@ -18,11 +17,13 @@ class ProjectSerializer(ModelSerializer):
         model = Project
         fields = '__all__'
 
-class Project_detail_serializer(ModelSerializer):
+
+class ProjectDetailSerializer(ModelSerializer):
 
     class Meta:
         model = Project
         fields = ['id', 'title']
+
 
 class ContributorSerializer(ModelSerializer):
 
@@ -31,13 +32,11 @@ class ContributorSerializer(ModelSerializer):
         fields = '__all__'
 
 
-
 class IssueSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Issue
         fields = '__all__'
-
 
 
 class CommentSerializer(serializers.ModelSerializer):

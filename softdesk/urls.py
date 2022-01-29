@@ -9,13 +9,16 @@ from rest_framework_nested import routers
 router = SimpleRouter()
 router.register('projects', views.ProjectViewSet, basename='project')
 
-projects_router = routers.NestedSimpleRouter(router, 'projects', lookup='project')
+projects_router = routers.NestedSimpleRouter(
+    router, 'projects', lookup='project')
 projects_router.register('users', views.ContributorViewSet, basename='users')
 
-issues_router = routers.NestedSimpleRouter(router, 'projects', lookup='project')
+issues_router = routers.NestedSimpleRouter(
+    router, 'projects', lookup='project')
 issues_router.register('issues', views.IssueViewSet, basename='issues')
 
-comments_router = routers.NestedSimpleRouter(issues_router, 'issues', lookup='issues')
+comments_router = routers.NestedSimpleRouter(
+    issues_router, 'issues', lookup='issues')
 comments_router.register('comments', views.CommentViewSet, basename='comments')
 
 
@@ -29,5 +32,3 @@ urlpatterns = [
     path('', include(issues_router.urls)),
     path('', include(comments_router.urls)),
 ]
-
-

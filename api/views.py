@@ -4,8 +4,9 @@ from . import models
 from . import permissions
 from rest_framework.permissions import IsAuthenticated
 
+
 class UserViewset(viewsets.ModelViewSet):
-    
+
     queryset = models.User.objects.all()
     serializer_class = serializers.UserSerializer
 
@@ -13,7 +14,7 @@ class UserViewset(viewsets.ModelViewSet):
 class ProjectViewSet(viewsets.ModelViewSet):
 
     serializer_class = serializers.ProjectSerializer
-    permission_classes = [IsAuthenticated, permissions.Project_permission]
+    permission_classes = [IsAuthenticated, permissions.ProjectPermission]
 
     def get_queryset(self):
         return models.Project.objects.all()
@@ -29,21 +30,21 @@ class ProjectViewSet(viewsets.ModelViewSet):
         request.data["author_user_id"] = request.user.pk
         request.POST._mutable = False
         return super().update(request, *args, **kwargs)
-   
+
     def get_serializer_class(self):
         if self.action == 'list':
-            return serializers.Project_detail_serializer
+            return serializers.ProjectDetailSerializer
         return super().get_serializer_class()
+
 
 class ContributorViewSet(viewsets.ModelViewSet):
 
     serializer_class = serializers.ContributorSerializer
-    permission_classes = [IsAuthenticated,permissions.Contributor_permission]
-   
+    permission_classes = [IsAuthenticated, permissions.ContributorPermission]
 
     def get_queryset(self, *args, **kwargs):
         project_pk = self.kwargs.get('project_pk')
-        return models.Contributor.objects.filter(project_id =project_pk)
+        return models.Contributor.objects.filter(project_id=project_pk)
 
     def create(self, request, *args, **kwargs):
         project_pk = self.kwargs.get('project_pk')
@@ -66,18 +67,16 @@ class ContributorViewSet(viewsets.ModelViewSet):
             return
         return super().destroy(request, *args, **kwargs)
 
-    #def destroy vérifier que le user n'est pas nous même 
-
 
 class IssueViewSet(viewsets.ModelViewSet):
 
-    serializer_class =serializers.IssueSerializer
+    serializer_class = serializers.IssueSerializer
     queryset = models.Issue.objects.all()
-    permission_classes = [IsAuthenticated, permissions.Issue_permission]
+    permission_classes = [IsAuthenticated, permissions.IssuePermission]
 
     def get_queryset(self, *args, **kwargs):
         project_pk = self.kwargs.get('project_pk')
-        return models.Issue.objects.filter(project_id =project_pk)
+        return models.Issue.objects.filter(project_id=project_pk)
 
     def create(self, request, *args, **kwargs):
         project_pk = self.kwargs.get('project_pk')
@@ -103,11 +102,11 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     serializer_class = serializers.CommentSerializer
     queryset = models.Comment.objects.all()
-    permission_classes = [IsAuthenticated, permissions.Comment_permission]
+    permission_classes = [IsAuthenticated, permissions.CommentPermission]
 
     def get_queryset(self, *args, **kwargs):
         issue_pk = self.kwargs.get('issues_pk')
-        return models.Comment.objects.filter(issue_id =issue_pk)
+        return models.Comment.objects.filter(issue_id=issue_pk)
 
     def create(self, request, *args, **kwargs):
         issue_pk = self.kwargs.get('issues_pk')
@@ -124,4 +123,3 @@ class CommentViewSet(viewsets.ModelViewSet):
         request.data["issue_id"] = issue_pk
         request.POST._mutable = False
         return super().update(request, *args, **kwargs)
-

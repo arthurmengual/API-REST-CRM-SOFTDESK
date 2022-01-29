@@ -2,7 +2,7 @@ from rest_framework.permissions import BasePermission
 from . import models
 
 
-class Project_permission(BasePermission):
+class ProjectPermission(BasePermission):
 
     def has_object_permission(self, request, view, obj):
         contributors = models.Contributor.objects.filter(project_id=obj.id)
@@ -24,8 +24,8 @@ class Project_permission(BasePermission):
         else:
             return False
 
-      
-class Contributor_permission(BasePermission):
+
+class ContributorPermission(BasePermission):
 
     def has_permission(self, request, view):
         project_id = view.kwargs['project_pk']
@@ -38,7 +38,8 @@ class Contributor_permission(BasePermission):
         else:
             return False
 
-class Issue_permission(BasePermission):
+
+class IssuePermission(BasePermission):
 
     def has_permission(self, request, view):
         project_id = view.kwargs['project_pk']
@@ -67,7 +68,7 @@ class Issue_permission(BasePermission):
             return False
 
 
-class Comment_permission(BasePermission):
+class CommentPermission(BasePermission):
 
     def has_permission(self, request, view):
         project_id = view.kwargs['project_pk']
